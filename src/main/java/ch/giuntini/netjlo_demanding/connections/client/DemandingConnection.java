@@ -1,7 +1,7 @@
 package ch.giuntini.netjlo_demanding.connections.client;
 
-import ch.giuntini.netjlo_base.connections.client.sockets.BaseSocket;
-import ch.giuntini.netjlo_base.packages.BasePackage;
+import ch.giuntini.netjlo_core.connections.client.sockets.BaseSocket;
+import ch.giuntini.netjlo_core.packages.BasePackage;
 import ch.giuntini.netjlo_core.connections.client.Connection;
 import ch.giuntini.netjlo_core.interpreter.Interpretable;
 import ch.giuntini.netjlo_core.threads.SenderThread;
@@ -9,7 +9,7 @@ import ch.giuntini.netjlo_demanding.threads.DemandingReceiverThread;
 
 import java.io.IOException;
 
-public class DemandingConnection<S extends BaseSocket, P extends BasePackage, I extends Interpretable<P>>
+public class DemandingConnection<S extends BaseSocket, P extends BasePackage<?>, I extends Interpretable<P>>
         extends Connection<S, P, I> {
 
     private SenderThread<S, P, I> senderThread;

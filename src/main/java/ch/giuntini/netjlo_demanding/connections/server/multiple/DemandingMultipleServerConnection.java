@@ -1,10 +1,10 @@
 package ch.giuntini.netjlo_demanding.connections.server.multiple;
 
-import ch.giuntini.netjlo_base.connections.client.sockets.BaseSocket;
-import ch.giuntini.netjlo_base.connections.server.Acceptable;
-import ch.giuntini.netjlo_base.connections.server.sockets.CustomServerSocket;
-import ch.giuntini.netjlo_base.packages.BasePackage;
-import ch.giuntini.netjlo_base.socket.Disconnectable;
+import ch.giuntini.netjlo_core.connections.client.sockets.BaseSocket;
+import ch.giuntini.netjlo_core.connections.server.Acceptable;
+import ch.giuntini.netjlo_core.connections.server.sockets.BaseServerSocket;
+import ch.giuntini.netjlo_core.packages.BasePackage;
+import ch.giuntini.netjlo_core.socket.Disconnectable;
 import ch.giuntini.netjlo_core.interpreter.Interpretable;
 import ch.giuntini.netjlo_core.socket.Send;
 
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DemandingMultipleServerConnection
-        <T extends CustomServerSocket<S>, S extends BaseSocket, P extends BasePackage, I extends Interpretable<P>>
+        <T extends BaseServerSocket<S>, S extends BaseSocket, P extends BasePackage<?>, I extends Interpretable<P>>
         implements Acceptable, AutoCloseable, Disconnectable, Send<P> {
 
     private final Class<T> serverSocketC;
@@ -79,20 +79,25 @@ public class DemandingMultipleServerConnection
     }
 
     @Override
-    public void sendAll(P pack) {
-        CONNECTIONS.forEach(spiActiveServerConnection -> spiActiveServerConnection.send(pack));
+    public void sendToAll(P pack) {
+        synchronized (CONNECTIONS) {
+            CONNECTIONS.forEach(spiActiveServerConnection -> spiActiveServerConnection.send(pack));
+        }
     }
 
     @Override
     public void disconnect() throws IOException {
-        CONNECTIONS.forEach(spiActiveServerConnection -> {
-            try {
-                spiActiveServerConnection.disconnect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        close();
         serverSocket.close();
+        synchronized (CONNECTIONS) {
+            CONNECTIONS.forEach(spiActiveServerConnection -> {
+                try {
+                    spiActiveServerConnection.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override

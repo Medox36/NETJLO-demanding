@@ -1,11 +1,11 @@
 package ch.giuntini.netjlo_demanding.threads;
 
-import ch.giuntini.netjlo_base.packages.BasePackage;
+import ch.giuntini.netjlo_core.packages.BasePackage;
 import ch.giuntini.netjlo_core.interpreter.Interpretable;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class DemandingInterpreterThread<P extends BasePackage, I extends Interpretable<P>>
+public class DemandingInterpreterThread<P extends BasePackage<?>, I extends Interpretable<P>>
         extends Thread implements AutoCloseable {
 
     protected final ConcurrentLinkedQueue<P> packages;
